@@ -69,6 +69,9 @@ class MyWebServer(socketserver.BaseRequestHandler):
         # print(responseBody)
         # print("resolvedPath: " + resolvedPath)
         # print("getServerPath:", self.getServerPath(resolvedPath))
+    
+    def respond301(self, protocol, host, path):
+        print("RESPOND 301")
 
     def respond400(self, protocol, host, path):
         message400 = protocol + " " + str(HTTPStatus.NOT_FOUND.value) + " " + HTTPStatus.NOT_FOUND.phrase
@@ -77,8 +80,14 @@ class MyWebServer(socketserver.BaseRequestHandler):
         print("RESPONSE:\n")
         print(message400)
 
-        httpResponse400 = (message400 + "\r\n").encode()
+        httpResponse400 = (message400 + "\r\n\r\n").encode()
         self.request.sendall(httpResponse400)
+    
+    def respond405(self, protocol, host, path):
+        message405 = protocol + " " + str(HTTPStatus.METHOD_NOT_ALLOWED.value) + " " + HTTPStatus.METHOD_NOT_ALLOWED.phrase
+
+        httpResponse405 = (message405 + "\r\n\r\n").encode()
+        self.request.sendall(httpResponse405)
 
 
     def handle(self):
@@ -93,7 +102,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
     def isPathAllowed(self, requestPath):
         realPath = os.path.realpath(DIR_PATH + requestPath)
         print("realPath:", realPath)
-        print("COMMONPATH: ", os.path.commonprefix([DIR_PATH, realPath]))
+        print("commonpath: ", os.path.commonprefix([DIR_PATH, realPath]))
         isInDirectory = False if os.path.commonprefix([DIR_PATH, realPath]) == "/" else True
         print("isInDirectory:", isInDirectory)
         return isInDirectory
@@ -101,7 +110,6 @@ class MyWebServer(socketserver.BaseRequestHandler):
     def doesPathExist(self, requestPath):
         # print(requestPath)
         serverPath = self.getServerPath(requestPath)
-        realPath = os.path.realpath(requestPath)
 
         # print("Path: " + self.getServerPath(requestPath))
         # print("dir_path:", DIR_PATH)
@@ -113,7 +121,13 @@ class MyWebServer(socketserver.BaseRequestHandler):
         # print("realPath:", realPath)
 
         print("serverPath:", serverPath)
+        print("Exists?", os.path.exists(serverPath))
         return os.path.exists(serverPath) 
+    
+    def endsInSlash(self, requestPath):
+        print("NO SLASH")
+        return requestPath[-1] == "/"
+
 
         # TODO: handle paths not ending in / and redirect
 
@@ -129,21 +143,24 @@ class MyWebServer(socketserver.BaseRequestHandler):
         requestProto = requestTypePathProto[2]
 
         # TODO: Check if GET or not, otherwise 405
-        # if requestType != "GET":
-        #     respond405()
+        if requestType != "GET":
+            self.respond405()
             
 
         requestHost = requestHost[1]
 
+        print("requestPath:", requestPath)
         # print("Type, Path, Proto, Host")
         # print(requestType, requestPath, requestProto, requestHost)
         doesExist = self.doesPathExist(requestPath)
         isPathAllowed = self.isPathAllowed(requestPath)
+        endsInSlash = self.endsInSlash(requestPath)
         print("doesExist: ", doesExist)
         print("isPathAllowed: ", isPathAllowed)
         # print(doesExist)
-
-        if doesExist and isPathAllowed:
+        if not endsInSlash:
+            self.respond301(requestProto, requestHost, requestPath)
+        elif doesExist and isPathAllowed:
             self.respond200(requestProto, requestHost, requestPath)
         else:
             self.respond400(requestProto, requestHost, requestPath)

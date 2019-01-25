@@ -26,21 +26,21 @@ class TestYourWebserver(unittest.TestCase):
         """do nothing"""
         self.baseurl = baseurl
 
-    def test_get_root(self):
-        print("TEST_GET_ROOT")
-        print("-"*20)
+    # def test_get_root(self):
+    #     print("TEST_GET_ROOT")
+    #     print("-"*20)
 
-        url = self.baseurl + "/"
-        req = request.urlopen(url, None, 3)
-        self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
+    #     url = self.baseurl + "/"
+    #     req = request.urlopen(url, None, 3)
+    #     self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
 
-        print()
+    #     print()
 
     def test_get_deep(self):
         print("TEST_GET_DEEP")
         print("-"*20)
 
-        url = self.baseurl + "/deep/"
+        url = self.baseurl + "/deep"
         req = request.urlopen(url, None, 3)
         self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
 
