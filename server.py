@@ -40,7 +40,17 @@ class MyWebServer(socketserver.BaseRequestHandler):
     
     def getServerPath(self, requestPath):
         return DIR_PATH + "www" + requestPath
+    
+    def respond400(self, protocol, host, path):
+        message400 = protocol + " " + str(HTTPStatus.NOT_FOUND.value) + " " + HTTPStatus.NOT_FOUND.phrase
 
+        print("-"*20)
+        print("RESPONSE:\n")
+        print(message400)
+
+        httpResponse400 = (message400 + "\r\n\r\n").encode()
+        self.request.sendall(httpResponse400)
+    
     def respond200(self, protocol, host, path):
         # print("respond200\n")
         resolvedPath = path + "index.html" if path[-1] == "/" else path
@@ -71,17 +81,21 @@ class MyWebServer(socketserver.BaseRequestHandler):
         # print("getServerPath:", self.getServerPath(resolvedPath))
     
     def respond301(self, protocol, host, path):
+        path += "/"
+        if not os.path.exists(self.getServerPath(path) + "index.html"):
+            self.respond400(protocol, host, path)
         print("RESPOND 301")
+        message301 = protocol + " " + str(HTTPStatus.MOVED_PERMANENTLY.value) + " " + HTTPStatus.MOVED_PERMANENTLY.phrase
+        locationHeader = "Location: " + host + path
+        print("PATH_301:", path)
+        print(message301)
+        print(locationHeader)
+        httpResponse301 = "\r\n".join([message301, locationHeader])
+        httpResponse301 += "\r\n\r\n"
+        httpResponse301 = httpResponse301.encode()
+        print(httpResponse301)
+        self.request.sendall(httpResponse301)
 
-    def respond400(self, protocol, host, path):
-        message400 = protocol + " " + str(HTTPStatus.NOT_FOUND.value) + " " + HTTPStatus.NOT_FOUND.phrase
-
-        print("-"*20)
-        print("RESPONSE:\n")
-        print(message400)
-
-        httpResponse400 = (message400 + "\r\n\r\n").encode()
-        self.request.sendall(httpResponse400)
     
     def respond405(self, protocol, host, path):
         message405 = protocol + " " + str(HTTPStatus.METHOD_NOT_ALLOWED.value) + " " + HTTPStatus.METHOD_NOT_ALLOWED.phrase
@@ -124,8 +138,14 @@ class MyWebServer(socketserver.BaseRequestHandler):
         print("Exists?", os.path.exists(serverPath))
         return os.path.exists(serverPath) 
     
+    def isFile(self, requestPath):
+        # if requestPath == "/":
+        #     return False
+        serverPath = self.getServerPath(requestPath)
+        print("Serverpath isfile: ", serverPath)
+        return os.path.isfile(serverPath)
+    
     def endsInSlash(self, requestPath):
-        print("NO SLASH")
         return requestPath[-1] == "/"
 
 
@@ -154,14 +174,21 @@ class MyWebServer(socketserver.BaseRequestHandler):
         # print(requestType, requestPath, requestProto, requestHost)
         doesExist = self.doesPathExist(requestPath)
         isPathAllowed = self.isPathAllowed(requestPath)
+        isFile = self.isFile(requestPath)
         endsInSlash = self.endsInSlash(requestPath)
         print("doesExist: ", doesExist)
         print("isPathAllowed: ", isPathAllowed)
+        print("isFile:", isFile)
         # print(doesExist)
-        if not endsInSlash:
-            self.respond301(requestProto, requestHost, requestPath)
-        elif doesExist and isPathAllowed:
+        # if not endsInSlash:
+        #     self.respond301(requestProto, requestHost, requestPath + "/")
+        if doesExist and isPathAllowed and isFile:
             self.respond200(requestProto, requestHost, requestPath)
+        elif doesExist and isPathAllowed and not isFile:
+            if endsInSlash:
+                self.respond200(requestProto, requestHost, requestPath)
+            else:
+                self.respond301(requestProto, requestHost, requestPath)
         else:
             self.respond400(requestProto, requestHost, requestPath)
         

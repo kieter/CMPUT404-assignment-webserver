@@ -26,108 +26,107 @@ class TestYourWebserver(unittest.TestCase):
         """do nothing"""
         self.baseurl = baseurl
 
-    # def test_get_root(self):
-    #     print("TEST_GET_ROOT")
-    #     print("-"*20)
-
-    #     url = self.baseurl + "/"
-    #     req = request.urlopen(url, None, 3)
-    #     self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
-
-    #     print()
-
-    def test_get_deep(self):
-        print("TEST_GET_DEEP")
+    def test_get_root(self):
+        print("TEST_GET_ROOT")
         print("-"*20)
 
-        url = self.baseurl + "/deep"
+        url = self.baseurl + "/"
         req = request.urlopen(url, None, 3)
         self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
 
         print()
 
+    def test_get_deep(self):
+        print("TEST_GET_DEEP")
+        print("-"*20)
 
-    # def test_get_index(self):
-    #     print("TEST_GET_INDEX")
-    #     print("-"*20)
+        url = self.baseurl + "/deep/"
+        req = request.urlopen(url, None, 3)
+        self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
 
-    #     url = self.baseurl + "/index.html"
-    #     req = request.urlopen(url, None, 3)
-    #     self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
+        print()
 
-    #     print()
+    def test_get_index(self):
+        print("TEST_GET_INDEX")
+        print("-"*20)
 
-    # def test_get_404(self):
-    #     print("TEST_GET_404")
-    #     print("-"*20)
+        url = self.baseurl + "/index.html"
+        req = request.urlopen(url, None, 3)
+        self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
 
-    #     url = self.baseurl + "/do-not-implement-this-page-it-is-not-found"
-    #     try:
-    #         req = request.urlopen(url, None, 3)
-    #         self.assertTrue( False, "Should have thrown an HTTP Error!")
-    #     except request.HTTPError as e:
-    #         self.assertTrue( e.getcode()  == 404 , ("404 Not FOUND! %d" % e.getcode()))
-    #     else:
-    #         self.assertTrue( False, "Another Error was thrown!")
+        print()
+
+    def test_get_404(self):
+        print("TEST_GET_404")
+        print("-"*20)
+
+        url = self.baseurl + "/do-not-implement-this-page-it-is-not-found"
+        try:
+            req = request.urlopen(url, None, 3)
+            self.assertTrue( False, "Should have thrown an HTTP Error!")
+        except request.HTTPError as e:
+            self.assertTrue( e.getcode()  == 404 , ("404 Not FOUND! %d" % e.getcode()))
+        else:
+            self.assertTrue( False, "Another Error was thrown!")
         
-    #     print()
+        print()
 
-    # def test_get_group(self):
-    #     print("TEST_GET_GROUP")
-    #     print("-"*20)
+    def test_get_group(self):
+        print("TEST_GET_GROUP")
+        print("-"*20)
 
-    #     """ how secure are you? """
-    #     url = self.baseurl + "/../../../../../../../../../../../../etc/group"
-    #     try:
-    #         req = request.urlopen(url, None, 3)
-    #         self.assertTrue( False, "Should have thrown an HTTP Error! [%d]" % req.getcode())
-    #     except request.HTTPError as e:
-    #         self.assertTrue( e.getcode()  == 404 , ("404 Not FOUND! %d" % e.getcode()))
-    #     else:
-    #         self.assertTrue( false, "Another Error was thrown!")
+        """ how secure are you? """
+        url = self.baseurl + "/../../../../../../../../../../../../etc/group"
+        try:
+            req = request.urlopen(url, None, 3)
+            self.assertTrue( False, "Should have thrown an HTTP Error! [%d]" % req.getcode())
+        except request.HTTPError as e:
+            self.assertTrue( e.getcode()  == 404 , ("404 Not FOUND! %d" % e.getcode()))
+        else:
+            self.assertTrue( false, "Another Error was thrown!")
 
-    #     print()
+        print()
 
-    # def test_css(self):
-    #     url = self.baseurl + "/base.css"
-    #     req = request.urlopen(url, None, 3)
-    #     self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
-    #     self.assertTrue( req.info().get_content_type() == "text/css", ("Bad mimetype for css! %s" % req.info().get_content_type()))
+    def test_css(self):
+        url = self.baseurl + "/base.css"
+        req = request.urlopen(url, None, 3)
+        self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
+        self.assertTrue( req.info().get_content_type() == "text/css", ("Bad mimetype for css! %s" % req.info().get_content_type()))
 
-    # def test_html(self):
-    #     url = self.baseurl + "/index.html"
-    #     req = request.urlopen(url, None, 3)
-    #     self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
-    #     self.assertTrue( req.info().get_content_type() == "text/html", ("Bad mimetype for html! %s" % req.info().get_content_type()))
+    def test_html(self):
+        url = self.baseurl + "/index.html"
+        req = request.urlopen(url, None, 3)
+        self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND!")
+        self.assertTrue( req.info().get_content_type() == "text/html", ("Bad mimetype for html! %s" % req.info().get_content_type()))
 
-    # def test_hardcode(self):
-    #     os.system("cp -r www/deep www/hardcode")
-    #     url = self.baseurl + "/hardcode/index.html"
-    #     req = request.urlopen(url, None, 3)
-    #     self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND! Hardcoding? /hardcode/index.html")
-    #     self.assertTrue( req.info().get_content_type() == "text/html", ("Bad mimetype for html! %s" % req.info().get_content_type()))
-    #     url = self.baseurl + "/hardcode/"
-    #     req = request.urlopen(url, None, 3)
-    #     self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND! Hardcoding? /hardcode/")
-    #     self.assertTrue( req.info().get_content_type() == "text/html", ("Bad mimetype for html! %s" % req.info().get_content_type()))
+    def test_hardcode(self):
+        os.system("cp -r www/deep www/hardcode")
+        url = self.baseurl + "/hardcode/index.html"
+        req = request.urlopen(url, None, 3)
+        self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND! Hardcoding? /hardcode/index.html")
+        self.assertTrue( req.info().get_content_type() == "text/html", ("Bad mimetype for html! %s" % req.info().get_content_type()))
+        url = self.baseurl + "/hardcode/"
+        req = request.urlopen(url, None, 3)
+        self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND! Hardcoding? /hardcode/")
+        self.assertTrue( req.info().get_content_type() == "text/html", ("Bad mimetype for html! %s" % req.info().get_content_type()))
 
-    # def test_hardcode2(self):
-    #     url = self.baseurl + "/deep.css"
-    #     try:
-    #         req = request.urlopen(url, None, 3)
-    #         self.assertTrue( False, "Should have thrown an HTTP Error for /deep.css!")
-    #     except request.HTTPError as e:
-    #         self.assertTrue( e.getcode()  == 404 , ("404 Not FOUND! %d" % e.getcode()))
-    #     else:
-    #         self.assertTrue( False, "Another Error was thrown!")
-    #     url = self.baseurl + "/deep/deep"
-    #     try:
-    #         req = request.urlopen(url, None, 3)
-    #         self.assertTrue( False, "Should have thrown an HTTP Error for /deep/deep!")
-    #     except request.HTTPError as e:
-    #         self.assertTrue( e.getcode()  == 404 , ("404 Not FOUND! %d" % e.getcode()))
-    #     else:
-    #         self.assertTrue( False, "Another Error was thrown!")
+    def test_hardcode2(self):
+        url = self.baseurl + "/deep.css"
+        try:
+            req = request.urlopen(url, None, 3)
+            self.assertTrue( False, "Should have thrown an HTTP Error for /deep.css!")
+        except request.HTTPError as e:
+            self.assertTrue( e.getcode()  == 404 , ("404 Not FOUND! %d" % e.getcode()))
+        else:
+            self.assertTrue( False, "Another Error was thrown!")
+        url = self.baseurl + "/deep/deep"
+        try:
+            req = request.urlopen(url, None, 3)
+            self.assertTrue( False, "Should have thrown an HTTP Error for /deep/deep!")
+        except request.HTTPError as e:
+            self.assertTrue( e.getcode()  == 404 , ("404 Not FOUND! %d" % e.getcode()))
+        else:
+            self.assertTrue( False, "Another Error was thrown!")
 
 if __name__ == '__main__':
     unittest.main()
