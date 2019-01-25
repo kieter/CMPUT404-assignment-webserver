@@ -25,13 +25,14 @@ examples thus some of the code is Copyright © 2001-2013 Python
 Software Foundation; All Rights Reserved under the PSF license (GPL
 compatible) http://docs.python.org/2/library/socketserver.html
 
-Kieter's submission was made in collaborations with:
+Kieter's submission was made in collaboration with:
 * Michael Paradis
 * Owen McLeod
 * Mandy Meindersma
 * Cole Mackenzie
 * Gurmeet (Gary) Dhillon
 * Liam McDonald
+* René Sauvé-Hoover
 
 Kieter also referenced:
 * https://docs.python.org/3/library/http.html
